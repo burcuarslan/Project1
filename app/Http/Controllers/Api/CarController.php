@@ -26,15 +26,25 @@ class CarController extends Controller
      */
     public function store(Request $request)
     {
-        $car=new Car;
-        $car->user_id=$request->user_id;
-        $car->plaque_number=$request->plaque_number;
 
-        $car->save();
-        return response([
-            'data'=>$car,
-            'message'=>'Car created.',
-        ]);
+        $a=$request->user_id;
+        $b=Car::where('user_id',$a)->count();
+        if ($b<3){
+            $car=new Car;
+            $car->user_id=$request->user_id;
+            $car->plaque_number=$request->plaque_number;
+
+            $car->save();
+            return response([
+                'data'=>$car,
+                'message'=>'Car created.',
+            ]);
+        }
+       else{
+           return response([
+               'message'=>'You can have up to 3 vehicles.'
+           ]);
+       }
     }
 
     /**
