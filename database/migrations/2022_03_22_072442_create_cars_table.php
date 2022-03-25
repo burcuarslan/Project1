@@ -15,11 +15,11 @@ class CreateCarsTable extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->nullable();
-            $table->string('plaque_number');
+            $table->bigInteger('user_id')->unsigned()->nullable();;
+            $table->string('plaque_number')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
-
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
         });
     }
 
