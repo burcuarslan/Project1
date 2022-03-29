@@ -11,7 +11,6 @@ class Car extends Model
     protected $fillable = [
         'plaque_number',
         'user_id',
-
     ];
     public function user(){
         return $this->belongsTo('App\Models\User');

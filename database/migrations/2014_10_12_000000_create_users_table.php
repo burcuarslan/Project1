@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('surname');
             $table->integer('apartment_no');
+
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });

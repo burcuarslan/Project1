@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CarResource;
 use App\Models\Car;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Resource_;
 
-class CarController extends Controller
+class CarController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +17,8 @@ class CarController extends Controller
      */
     public function index()
     {
-        return response(Car::all(), 200);
+
+        return  CarResource::collection(Car::all());
     }
 
     /**
@@ -27,23 +30,22 @@ class CarController extends Controller
     public function store(Request $request)
     {
 
-        $a=$request->user_id;
-        $b=Car::where('user_id',$a)->count();
-        if ($b<3){
+        $car_count=$request->user_id;
+        $qb=Car::where('user_id',$car_count)->count();
+        if ($qb<3&$qb>0){
             $car=new Car;
             $car->user_id=$request->user_id;
             $car->plaque_number=$request->plaque_number;
 
             $car->save();
-            return response([
-                'data'=>$car,
-                'message'=>'Car created.',
-            ]);
+            return $this->apiResponse(ResultType::Success,$car,'Car created',201);
         }
+
        else{
-           return response([
-               'message'=>'You can have up to 3 vehicles.'
-           ]);
+           return $this->apiResponse(ResultType::Error,null,'You can have up to 3 vehicles',404);
+//           return response([
+//               'message'=>'You can have up to 3 vehicles.'
+//           ]);
        }
     }
 
@@ -57,10 +59,10 @@ class CarController extends Controller
     {
         $car=User::find($id);
         if ($car) {
-            return response($car,200) ;
+            return new CarResource($car);
         }
         else{
-            return response(['message'=>'Car Not Found'],404);
+            return $this->apiResponse(ResultType::Error,null,'Car not found',404);
         }
     }
 
@@ -73,7 +75,12 @@ class CarController extends Controller
      */
     public function update(Request $request, Car $car)
     {
-        //
+        $car->name=$request->plaque_number;
+
+        $car->updated_at=$request->updated_at;
+        $car->save();
+
+        return $this->apiResponse(ResultType::Success,$car,'Car updated',200);
     }
 
     /**
@@ -88,16 +95,12 @@ class CarController extends Controller
 
         if ($car==is_null(1)) {
 
-            return response(['message'=>'Car Not Found', $car],404);
+            return $this->apiResponse(ResultType::Error,null,'Car not found',404);
         }
         else{
 
             $car->delete();
-            return response([
-                'message'=>'Car Deleted',
-
-
-            ],200);
+            return $this->apiResponse(ResultType::Success,null,'User Deleted',200);
         }
     }
 }

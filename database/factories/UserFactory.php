@@ -17,9 +17,8 @@ class UserFactory extends Factory
     {
         DB::statement("TRUNCATE TABLE users");
         return [
-            'name' => $this->faker->name(),
-            'surname' => $this->faker->name(),
-
+            'name' => $this->faker->name,
+            'surname'=>$this->faker->lastName,
             'apartment_no' => rand(1,100),
             'created_at' => now(),
             'updated_at' => now()
