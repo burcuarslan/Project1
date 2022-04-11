@@ -17,8 +17,7 @@ class CreateCarsTable extends Migration
             $table->id();
 
             $table->string('plaque_number')->nullable();
-            $table->timestamp('created_at')->nullable();
-            $table->timestamp('updated_at')->nullable();
+            $table->timestamp()->nullable();
             $table->foreignId('user_id')->nullable()->references('id')->on('users')->onDelete('cascade');
         });
     }

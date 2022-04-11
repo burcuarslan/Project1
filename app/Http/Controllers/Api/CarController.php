@@ -73,11 +73,18 @@ class CarController extends ApiController
      * @param  \App\Models\Car  $car
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Car $car)
+    public function update(Request $request, Car $car,$id)
     {
+
+        $car=Car::find($id);
+
         $car->name=$request->plaque_number;
 
         $car->updated_at=$request->updated_at;
+
+
+
+
         $car->save();
 
         return $this->apiResponse(ResultType::Success,$car,'Car updated',200);

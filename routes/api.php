@@ -20,14 +20,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResources([
     'users'=>'App\Http\Controllers\Api\UserController',
+
     'cars'=>'App\Http\Controllers\Api\CarController',
     //'cars2'=>'App\Http\Resources\CarResource'
 ]);
+Route::post('users/request',[\App\Http\Controllers\Api\UserController::class,'request']);
 
-Route::get('http://project1.test/selam',function (){
-    return  'selam';
-});
-
-Route::get('/cars2/{id}', function ($id) {
-    return new \App\Http\Resources\CarResource(Car::findOrFail($id));
-});
+//Route::get('http://project1.test/selam',function (){
+//    return  'selam';
+//});
+//
+//Route::get('/cars2/{id}', function ($id) {
+//    return new \App\Http\Resources\CarResource(Car::findOrFail($id));
+//});

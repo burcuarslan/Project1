@@ -7,6 +7,7 @@ use App\Http\Resources\CarResource;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserWithCarsResource;
+use App\Models\Car;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -95,19 +96,21 @@ class UserController extends ApiController
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        $userFind=User::find($request->id);
+
+        $userFind=User::find($id);
+
         if ($userFind==null){
             return $this->apiResponse(ResultType::Error,null,'User not found',404);
         }
         else{
-            $user->name=$request->name;
-            $user->surname=$request->surname;
-            $user->apartment_no=$request->apartment_no;
-            $user->save();
+           // dd();
+            $userFind->name=$request->name;
+            $userFind->surname=$request->surname;
+            $userFind->apartment_no=$request->apartment_no;
 
-            return $this->apiResponse(ResultType::Success,$user,'User updated',200);
+            return $this->apiResponse(ResultType::Success,$userFind,'updated',200);
         }
 
 
@@ -133,5 +136,63 @@ class UserController extends ApiController
             return $this->apiResponse(ResultType::Success,null,'User Deleted',200);
 
         }
+    }
+
+    public function request(Request $request, $id){
+        $r=$request->get("cars");
+        $user=User::find($id);
+
+            if ($id==is_null(1)){
+                $userFind=User::where('apartment_no',$request->apartment_no)->first();
+                if ($userFind){
+                    return $this->apiResponse(null,'user already exists',404);
+                }
+                else{
+                    $user=new User;
+                    $user->name=$request->name;
+                    $user->surname=$request->surname;
+                    $user->apartment_no=$request->apartment_no;
+                    $user->save();
+                   if ($r!=is_null(1)){
+                       foreach ($request->get("cars") as $car){
+                           $carNew=new Car();
+                           $carNew->plaque_number=$car['plaque_number'];
+                           $carNew->save();
+                       }
+                   }
+
+                    return $this->apiResponse(ResultType::Success,$user,'user and car created',201);
+                }
+            }
+            else if($request==is_null(1)&&$id!=is_null(1)){
+                $user=User::find($id);
+
+                    $user->delete();
+                    return $this->apiResponse(ResultType::Success,null,'User Deleted',200);
+
+
+            }
+            else{
+                $userFind=User::find($id);
+//                if ($userFind==null){
+//                    return $this->apiResponse(ResultType::Error,null,'User not found',404);
+//                }
+
+                    // dd();
+                    $userFind->name=$request->name;
+                    $userFind->surname=$request->surname;
+                    $userFind->apartment_no=$request->apartment_no;
+
+                //dump(@$car['id']);
+                // dump($r[0]);
+                foreach ($request->get("cars") as $car) {
+                    Car::find($car['id'])->update([
+                        'plaque_number' => $car['plaque_number']
+                    ]);
+                }
+                return $this->apiResponse(ResultType::Success,$userFind,'updated',200);
+            }
+
+
     }
 }
